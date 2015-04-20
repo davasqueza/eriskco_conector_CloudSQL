@@ -43,6 +43,9 @@ import geojson
 import geomet.wkt
 import sqlparse
 
+import datetime
+
+
 # This is your CloudSQL instance
 _INSTANCE = 'titan-sci:capasgeograficas'
 _GEOMETRY_FIELD = 'SHAPE'
@@ -58,13 +61,25 @@ app = flask.Flask(__name__)
 
 def outputJSON(obj):
     """Default JSON serializer."""
-
-    if isinstance(obj, datetime.datetime):
-        if obj.utcoffset() is not None:
-            obj = obj - obj.utcoffset()
-
-        return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
-    return str(obj)
+    if isinstance(obj, datetime.date):   
+        dateInfo=str(obj).split("-")
+        date={}
+        date["year"]=dateInfo[0]
+        date["month"]=dateInfo[1]
+        date["day"]=dateInfo[2]
+        obj=date
+        #obj=json.dumps(date, ensure_ascii=False)
+        #obj = json.JSONEncoder().encode(date)
+    elif isinstance(obj, datetime.timedelta):
+        hourInfo=str(obj).split(":")
+        time={}
+        time["hour"]=hourInfo[0]
+        time["minute"]=hourInfo[1]
+        time["second"]=hourInfo[2]
+        obj=time
+        #obj=json.dumps(time, encoding="UTF8")
+        #obj = json.JSONEncoder().encode(time)
+    return obj
 
 @app.route('/tables/<database>:<table>/features')
 def do_features_list(database, table):
