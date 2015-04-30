@@ -79,7 +79,8 @@ def outputJSON(obj):
         obj=time
         #obj=json.dumps(time, encoding="UTF8")
         #obj = json.JSONEncoder().encode(time)
-    return obj
+	
+	return str(obj)
 
 @app.route('/tables/<database>:<table>/features')
 def do_features_list(database, table):
