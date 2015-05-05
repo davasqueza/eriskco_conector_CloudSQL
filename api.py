@@ -44,6 +44,7 @@ import geomet.wkt
 import sqlparse
 
 import datetime
+import decimal
 
 
 # This is your CloudSQL instance
@@ -64,23 +65,24 @@ def outputJSON(obj):
     if isinstance(obj, datetime.date):   
         dateInfo=str(obj).split("-")
         date={}
-        date["year"]=dateInfo[0]
-        date["month"]=dateInfo[1]
-        date["day"]=dateInfo[2]
+        date["year"]=int(dateInfo[0])
+        date["month"]=int(dateInfo[1])
+        date["day"]=int(dateInfo[2])
         obj=date
-        #obj=json.dumps(date, ensure_ascii=False)
-        #obj = json.JSONEncoder().encode(date)
     elif isinstance(obj, datetime.timedelta):
         hourInfo=str(obj).split(":")
         time={}
-        time["hour"]=hourInfo[0]
-        time["minute"]=hourInfo[1]
-        time["second"]=hourInfo[2]
+        time["hour"]=int(hourInfo[0])
+        time["minute"]=int(hourInfo[1])
+        time["second"]=int(hourInfo[2])
         obj=time
-        #obj=json.dumps(time, encoding="UTF8")
-        #obj = json.JSONEncoder().encode(time)
-	
-	return str(obj)
+    elif isinstance(obj, decimal.Decimal):
+        obj = int(obj)
+    elif not isinstance(obj, int) and not isinstance(obj, float):
+        obj=str(obj)
+    #else:
+    #    obj=str(obj)
+    return obj
 
 @app.route('/tables/<database>:<table>/features')
 def do_features_list(database, table):
